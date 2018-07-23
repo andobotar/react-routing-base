@@ -14,68 +14,94 @@ npm i react-router-dom
 
 
 ##### App.js:
-After installation we need to wrap everything in our project in a *BrowserRouter* component.
+After installation we need to wrap our project in a *BrowserRouter* component.
 In our project structure, the most obvious place for this would be the App.js file. After the usual
-import statement, simply put the *BrowserRouter* tags around the *Layout* so the App.js will look
+import statement, simply wrap everything in App.js between *BrowserRouter* tags, which will look
 something like this:
 
 ```jsx
-import React from 'react';
+import React, { Component } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Layout from './component/Layout/Layout'
-  
-const App = () => (
-        <BrowserRouter>
-            <div className="App">
-                <Layout />
-            </div>
-        </BrowserRouter>
-);
-  
+import './App.css';
+
+import Navbar from './component/Navbar';
+import Main from './component/Main';
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <div className="App">
+          <Navbar />
+          <Main />
+        </div>
+      </BrowserRouter>
+    );
+  }
+}
+
 export default App;
 ```
 
-##### Layout.js:
+##### Navbar.jsx:
 
-Now in the Layout.js (or anywhere else that wraps the whole app and is inside the *BrowserRouter*),
-we need to import the components that are actually responsible for the routing:
+Now let's turn our *a* tags into React Roter Links.
 
-```jsx
-import { Switch, Route, Link } from ‘react-router-dom’;
-```
-	
-Generally the navbar contains the links, so we will include the imported *Link* components here:
+After the import:
 
 ```jsx
-<div className="navbar">
-    <ul className="nav navbar-nav">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/someLink">Some Link</Link></li>
-        <li><Link to="/someOtherLink">Some Other Link</Link></li>
-    </ul>
-</div>
+import { Link } from ‘react-router-dom’;
 ```
 
-Then we will need to specify the component that will be rendered when clicking on the link:
+We simply need to swap the *a* tages with *Link* tags, and provide them with a 'to' attribute instead of the 'href'.
+
+```jsx
+<Link to="/" className='navbar-link'>Main Page</Link>
+<Link to="second" className='navbar-link'>Second Page</Link>
+<Link to="third" className='navbar-link'>Third Page</Link>
+```
+
+##### App.js
+
+After this, we will need to specify the components that will be rendered when clicking on the links. We need to import and use *Route* from 'react-router-dom':
+
+```jsx
+import { BrowserRouter, Route } from 'react-router-dom';
+```
+
+```jsx
+<BrowserRouter>
+  <div className="App">
+    <Navbar />
+    <Route path='/' exact component={Main} />
+    <Route path='/second' exact component={SecondPage} />
+    <Route path='/third' exact component={ThirdPage} />
+  </div>
+</BrowserRouter>
+```
+
+The ‘path’ looks for URLs that **start** with the given string. If we now click the 'Second Page' link, the Main Page will also be rendered, as ‘/second‘ starts with ‘/’. To avoid this behavior, we use the ‘exact’ keyword:
+
+```jsx
+	<Route path=‘/‘ exact component={Main} />
+```
+
+### Switch
+
+By using *Switch*, the router will only look for one matching route and no further. Without
+it the *Router* wound carry on and render all the components that match the path. Simply import it from 'react-router-dom' and wrap your Routes inside it:
+
+```jsx
+import { Switch } from 'react-router-dom';
+```
 
 ```jsx
 <Switch>
-    <Route path=‘/‘ component={WelcomePage} />
-    <Route path=‘/someLink’ component={VeryInterestingComponent} />
-    <Route path=‘/someOtherLink’ component={LittleBitBoringComponent} />
+  <Route path='/' exact component={Main} />
+  <Route path='/second' exact component={SecondPage} />
+  <Route path='/third' exact component={ThirdPage} />
 </Switch>
 ```
-
-The ‘path’ looks for URLs that **start** with the given string. If you change the order of ‘/‘ and ‘dogs’,
-the dogs will also be rendered, as the ‘/‘ matches the ‘/dogs’ too. To avoid this behavior, we use the
-‘exact’ keyword:
-
-```jsx
-	<Route path=‘/‘ exact component={WelcomePage} />
-```
-
-By using the *Switch*, the router will only look for one matching route and no further. Without
-it the *Router* wound carry on and render all the components that match the path.
 
 ##### Navigating programmatically:
 
